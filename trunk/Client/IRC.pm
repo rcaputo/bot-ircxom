@@ -370,7 +370,7 @@ sub try_num {
   my $old_nick = eval { _get_nick($fqfn) };
   return $@->[0] if $@;
 
-  unless ($conf{open} or lc($nick) eq lc($old_nick)) {
+  unless ($open or lc($nick) eq lc($old_nick)) {
     return "You didn't write entry \#$number.";
   }
 
@@ -406,7 +406,7 @@ sub try_title {
   my $old_nick = eval { _get_nick($fqfn) };
   return $@->[0] if $@;
 
-  unless ($conf{open} or lc($nick) eq lc($old_nick)) {
+  unless ($open or lc($nick) eq lc($old_nick)) {
     return "You didn't write entry \#$number.";
   }
 
@@ -456,7 +456,7 @@ sub try_remove {
   my $old_nick = eval { _get_nick($fqfn) };
   return $@->[0] if $@;
 
-  unless ($conf{open} or lc($nick) eq lc($old_nick)) {
+  unless ($open or lc($nick) eq lc($old_nick)) {
     return "You didn't write entry \#$number.";
   }
 
