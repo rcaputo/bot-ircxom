@@ -1,3 +1,0 @@
-Options Indexes ExecCGI
-DirectoryIndex blosxom.cgi
-#ErrorDocument 404 /~troc/whip/index.cgi
