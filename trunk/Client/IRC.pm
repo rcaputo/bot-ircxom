@@ -157,7 +157,7 @@ foreach my $server (get_names_by_type('irc')) {
           my ($nick) = $sender =~ /^([^!]+)/;
           print "Message $msg from $nick\n";
 
-          my $response = try_all($msg, $server, "msg", $nick);
+          my $response = try_all($msg, $server, "msg", $nick, $conf{open});
           $kernel->post($server => privmsg => $nick, $response)
             if defined $response;
         },
@@ -257,7 +257,7 @@ foreach my $server (get_names_by_type('irc')) {
           return unless $msg =~ s/^\s*$self[\#\)\-\:\>\}\|\,]+\s*//;
 
           # Do something with input here?
-          my $response = try_all($msg, $server, $where, $who);
+          my $response = try_all($msg, $server, $where, $who, $conf{open});
           $kernel->post($server => privmsg => $where, $response)
             if defined $response;
         },
@@ -310,7 +310,7 @@ sub format_elapsed {
 
 ### Do the help stuff.  Used for public and private messages.
 sub try_help {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
 
   return undef unless $msg =~ /^help(?:\s+(\w+))?$/;
   my $what = $1;
@@ -322,7 +322,7 @@ sub try_help {
 
 ### Generate uptime message.
 sub try_uptime {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
 
   return undef unless $msg =~ /^\s*uptime\s*$/;
 
@@ -340,7 +340,7 @@ sub try_uptime {
 
 ### Try the url command.
 sub try_url {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
   return "I should be at $blog_url"
     if $msg =~ /^url\??$/;
   return undef;
@@ -348,7 +348,7 @@ sub try_url {
 
 ### Say something about the bot.
 sub try_about {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
   return undef unless $msg =~ /^about\??$/;
   return ( "Ircxom is an experiment in group IRC logging.  " .
            "It allows users of IRC channels to add and maintain " .
@@ -358,7 +358,7 @@ sub try_about {
 
 ### Append to a numbered thingy.
 sub try_num {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
 
   return undef unless $msg =~ /^\#(\d+)\s*(?:[\.\+]=)?\s*(.*)$/;
   my ($number, $message) = ($1, $2);
@@ -394,7 +394,7 @@ sub try_num {
 
 ### Retitle a thingy.
 sub try_title {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
 
   return undef unless $msg =~ /^title\s*\#(\d+)\s*(?:[\.\+]=)?\s*(.*)/;
   my ($number, $new_title) = ($1, $2);
@@ -444,7 +444,7 @@ sub try_title {
 
 ### Remove a thingy.
 sub try_remove {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
 
   return undef unless $msg =~ /^rm\s*\#(\d+)/;
   my $number = $1;
@@ -466,7 +466,7 @@ sub try_remove {
 
 ### Rename a thingy.
 sub try_rename {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
 
   return undef unless $msg =~ /^mv\s*\#(\d+)\s*(\S+)(.*?)$/;
   my ($number, $new_rel_path, $syntax_error) = ($1, $2, $3);
@@ -500,7 +500,7 @@ sub try_rename {
 
 ### Append to a thingy.
 sub try_applast {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
 
   return undef unless $msg =~ /^\.\.\.\s*(.*)$/;
   my $message = $1;
@@ -533,7 +533,7 @@ sub try_applast {
 
 ### Create a thingy.
 sub try_create {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
 
   my $next_file = $base_dir . "ircxom.seqnum";
   unless (-e $next_file) {
@@ -575,7 +575,7 @@ sub try_create {
 
 ### Helper.  Process a list of commands.
 sub try_all {
-  my ($msg, $net, $channel, $nick) = @_;
+  my ($msg, $net, $channel, $nick, $open) = @_;
   my $response;
 
   # Clean up input.
@@ -588,36 +588,36 @@ sub try_all {
   $channel = "private" unless $channel;
 
   # Try things.
-  $response = try_uptime($msg, $net, $channel, $nick);
+  $response = try_uptime($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
-  $response = try_help($msg, $net, $channel, $nick);
+  $response = try_help($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
-  $response = try_about($msg, $net, $channel, $nick);
+  $response = try_about($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
-  $response = try_url($msg, $net, $channel, $nick);
+  $response = try_url($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
-  $response = try_num($msg, $net, $channel, $nick);
+  $response = try_num($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
-  $response = try_title($msg, $net, $channel, $nick);
+  $response = try_title($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
-  $response = try_remove($msg, $net, $channel, $nick);
+  $response = try_remove($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
-  $response = try_rename($msg, $net, $channel, $nick);
+  $response = try_rename($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
-  $response = try_applast($msg, $net, $channel, $nick);
+  $response = try_applast($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
   # This should go last, as it's the default action and will almost
   # always return something positive.
-  $response = try_create($msg, $net, $channel, $nick);
+  $response = try_create($msg, $net, $channel, $nick, $open);
   return $response if defined $response;
 
   return;
