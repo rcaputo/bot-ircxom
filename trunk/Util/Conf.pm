@@ -34,6 +34,7 @@ my %define =
       cver    => SCALAR | REQUIRED,
       ccinfo  => SCALAR | REQUIRED,
       channel => LIST   | REQUIRED,
+      open    => SCALAR,
     },
     paths =>
     { data    => SCALAR | REQUIRED,
