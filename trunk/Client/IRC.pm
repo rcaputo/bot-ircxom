@@ -583,6 +583,11 @@ sub try_all {
   $msg =~ s/^\s+//;
   $msg =~ s/\s+$//;
 
+  # Indigoid supplied these regexps to extract colors.
+  $msg =~ s/[\x02\x0F\x11\x12\x16\x1d\x1f]//g;    # Regular attributes.
+  $msg =~ s/\x03[0-9,]*//g;                       # mIRC colors.
+  $msg =~ s/\x04[0-9a-f]+//ig;                    # Other colors.
+
   $channel =~ s/\/+/-/g;
   $channel =~ s/\.\.*/_/g;
   $channel = "private" unless $channel;
