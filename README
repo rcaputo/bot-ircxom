@@ -1,0 +1,7 @@
+Ircxom is an IRC bot that allows people to write and manage posts in a
+Blosxom blog.  Posts are organized by network and channel.  Chat-based
+communities can use it to record oral history.  It's a little more
+private and centralized than twitter, and the messages can be
+substantially larger.
+
+Originally hacked together around March 2003.
